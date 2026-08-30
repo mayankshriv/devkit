@@ -25,7 +25,7 @@ brew "git-filter-repo"        # repo history rewriting
 # Terminal
 # -------------------------------------------------------------------
 brew "tmux"                   # terminal multiplexer (fallback)
-# brew "herdr"                # agent-aware terminal multiplexer (uncomment when available via brew)
+brew "herdr"                  # agent-aware terminal multiplexer
 
 # -------------------------------------------------------------------
 # Languages - Java
