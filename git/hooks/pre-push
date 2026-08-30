@@ -1,0 +1,30 @@
+#!/bin/sh
+# Prevent force pushes to protected branches (main, master).
+# Force push on feature branches is allowed - that's normal development.
+#
+# Install globally: git config --global core.hooksPath ~/devkit/git/hooks
+
+protected_branches="main master"
+remote="$1"
+
+while read local_ref local_sha remote_ref remote_sha; do
+  # Extract branch name from refs/heads/<branch>
+  remote_branch="${remote_ref#refs/heads/}"
+
+  for protected in $protected_branches; do
+    if [ "$remote_branch" = "$protected" ]; then
+      # Check if this is a force push (non-fast-forward)
+      if [ "$remote_sha" != "0000000000000000000000000000000000000000" ]; then
+        merge_base=$(git merge-base "$remote_sha" "$local_sha" 2>/dev/null)
+        if [ "$merge_base" != "$remote_sha" ]; then
+          echo "ERROR: Force push to '$protected' is blocked."
+          echo "This branch is protected to prevent history rewriting."
+          echo "Push to a feature branch and create a pull request instead."
+          exit 1
+        fi
+      fi
+    fi
+  done
+done
+
+exit 0

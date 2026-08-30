@@ -1,0 +1,11 @@
+# Secrets
+shell/env.local
+
+# User-specific tab config
+tabs/tabs.yaml
+
+# macOS
+.DS_Store
+
+# Claude Code local overrides
+.claude/settings.local.json

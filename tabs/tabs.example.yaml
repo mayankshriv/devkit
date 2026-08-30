@@ -1,0 +1,29 @@
+# devkit tabs layout
+# Copy to ~/.config/devkit/ and edit with your projects:
+#   mkdir -p ~/.config/devkit
+#   cp tabs.example.yaml ~/.config/devkit/tabs.yaml
+#
+# Used by herdr-spreader (preferred) or tmux (fallback).
+
+workspaces:
+  - name: project-a
+    root: ~/projects/project-a
+    tabs:
+      - label: code
+        panes:
+          - command: claude
+
+  - name: project-b
+    root: ~/projects/project-b
+    tabs:
+      - label: code
+        panes:
+          - command: claude
+
+  - name: ops
+    root: ~/projects
+    focus: true
+    tabs:
+      - label: ops
+        panes:
+          - command: claude

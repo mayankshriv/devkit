@@ -1,0 +1,20 @@
+# Global gitignore
+# Symlinked to ~/.config/git/ignore by install.sh
+
+# Claude Code local overrides
+**/.claude/settings.local.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.cursor/
+
+# Environment secrets
+.env.local
+env.local

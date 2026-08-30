@@ -1,0 +1,32 @@
+# devkit git config
+# Usage: copy relevant sections to your ~/.gitconfig or include this file
+#
+#   [include]
+#       path = ~/devkit/git/gitconfig
+
+[core]
+    editor = vim
+    hooksPath = ~/devkit/git/hooks
+
+[diff]
+    tool = tkdiff
+    prompt = false
+
+[merge]
+    tool = tkdiff
+
+[alias]
+    df = difftool --no-prompt
+    co = checkout
+    br = branch
+    st = status
+    lg = log --oneline --graph --decorate -20
+
+[push]
+    default = simple
+
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+
+[init]
+    defaultBranch = main

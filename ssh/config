@@ -1,0 +1,9 @@
+# SSH config template
+# Usage: copy to ~/.ssh/config (don't symlink - you'll add host-specific entries)
+#
+# After copying, add your own Host entries below the defaults.
+
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
