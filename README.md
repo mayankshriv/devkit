@@ -61,14 +61,16 @@ Then use these commands:
 
 | Command | What it does |
 |---------|-------------|
-| `tabs` | Launch or reattach to all tabs |
-| `tabls` | Show all tabs |
+| `tabs` | Launch or reattach to all tabs (herdr if installed, tmux otherwise) |
+| `tabs -herdr` | Force herdr backend |
+| `tabs -tmux` | Force tmux backend |
+| `tabls` | Show all tabs with agent status |
 | `tabadd <name> [dir]` | Add a tab on the fly |
 | `tabrm <name>` | Remove a tab |
 | `taboff` | Stop all tabs |
 
-Uses [herdr](https://herdr.dev) (agent-aware multiplexer - sessions survive lid close) with
-tmux as fallback.
+Defaults to [herdr](https://herdr.dev) when installed (agent-aware multiplexer - sessions
+survive lid close, shows Claude working/blocked/done status). Falls back to tmux.
 
 ## Customization
 
