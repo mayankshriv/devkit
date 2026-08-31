@@ -1,0 +1,56 @@
+onboarding = false
+
+[theme]
+name = "catppuccin"
+
+[theme.custom]
+# Sidebar: near-black background, distinct from pane area
+sidebar_bg = "#0a0a12"
+active_row_bg = "#1e1e2e"
+selection_bg = "#45475a"
+panel_bg = "#141420"
+
+# Borders and lines: bright teal
+accent = "#40b8b0"
+surface0 = "#40b8b0"
+surface1 = "#40b8b0"
+surface_dim = "#40b8b0"
+
+# UI chrome labels (spaces, new, menu): muted lavender
+overlay0 = "#8888aa"
+overlay1 = "#9999bb"
+subtext0 = "#8888aa"
+
+# Primary text
+text = "#cdd6f4"
+
+[keys]
+switch_workspace = "alt+1..9"
+
+[ui]
+sidebar_start_collapsed = false
+sidebar_min_width = 18
+sidebar_max_width = 24
+
+pane_gaps = true
+pane_borders = true
+pane_outer_borders = true
+pane_scrollbars = false
+show_agent_labels_on_pane_borders = true
+
+hide_tab_bar_when_single_tab = true
+status_indicators = "symbols"
+
+# Sidebar: workspace in blue, branch in orange
+[ui.sidebar.spaces]
+row_gap = 0
+rows = [
+  ["state_icon", { token = "workspace", fg = "#82befc", bold = true }, { token = "branch", fg = "#ffaa30" }],
+]
+
+# Sidebar: agent in pink, status in green, workspace in blue
+[ui.sidebar.agents]
+rows = [
+  ["state_icon", { token = "agent", fg = "#e06cff", bold = true }, { token = "state_text", fg = "#50ee80" }],
+  [{ token = "workspace", fg = "#82befc" }, "tab"],
+]
