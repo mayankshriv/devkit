@@ -38,21 +38,23 @@ _devkit_tabs_backend() {
   esac
 }
 
-# Ensure each workspace has its configured agent running (idempotent)
+# Ensure each workspace has its configured agent running (idempotent).
+# Handles post-restart: herdr restores workspaces but agents may fail to
+# resume (stale session ID). This function detects agentless panes, sends
+# Enter to dismiss any error output, waits for a shell prompt, then starts
+# the configured command fresh.
 _devkit_tabs_ensure_agents() {
-  # Build set of workspace labels that already have an agent
-  local agent_workspaces
-  agent_workspaces=$(herdr agent list 2>/dev/null | python3 -c "
+  # Workspace IDs that already have a running agent
+  local agent_ws
+  agent_ws=$(herdr agent list 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
-seen = set()
 for a in data.get('result', {}).get('agents', []):
-    seen.add(a.get('workspace_id', ''))
-print('\n'.join(seen))
+    print(a.get('workspace_id', ''))
 " 2>/dev/null)
 
-  # Map workspace labels to pane IDs
-  local ws_map
+  # Map: label -> workspace_id, workspace_id -> pane_id
+  local ws_map pane_map
   ws_map=$(herdr workspace list 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
@@ -60,7 +62,6 @@ for w in data.get('result', {}).get('workspaces', []):
     print(w.get('label', '') + '\t' + w.get('workspace_id', ''))
 " 2>/dev/null)
 
-  local pane_map
   pane_map=$(herdr pane list 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
@@ -68,7 +69,7 @@ for p in data.get('result', {}).get('panes', []):
     print(p.get('workspace_id', '') + '\t' + p.get('pane_id', ''))
 " 2>/dev/null)
 
-  # Parse config: for each workspace, find its command and start if missing
+  # Walk the config; for each workspace+command pair, start if no agent
   local name cmd
   while IFS= read -r line; do
     if [[ "$line" =~ '- name: '(.+) ]]; then
@@ -76,18 +77,19 @@ for p in data.get('result', {}).get('panes', []):
       cmd=""
     elif [[ "$line" =~ 'command: '(.+) ]]; then
       cmd="${match[1]}"
-    elif [[ "$line" =~ '- name: '(.+) || -z "$line" ]] || [[ "$line" == "---" ]]; then
-      :
     fi
 
-    # When we have both name and command, check if agent is needed
     if [[ -n "$name" && -n "$cmd" ]]; then
       local ws_id pane_id
       ws_id=$(echo "$ws_map" | awk -F'\t' -v n="$name" '$1==n {print $2; exit}')
-      if [[ -n "$ws_id" ]] && ! echo "$agent_workspaces" | grep -qx "$ws_id"; then
+      if [[ -n "$ws_id" ]] && ! echo "$agent_ws" | grep -qx "$ws_id"; then
         pane_id=$(echo "$pane_map" | awk -F'\t' -v w="$ws_id" '$1==w {print $2; exit}')
         if [[ -n "$pane_id" ]]; then
-          herdr agent start "$name" --kind claude --pane "$pane_id" --timeout 10000 2>/dev/null
+          # Dismiss any failed resume output and wait for shell prompt
+          herdr pane send-keys "$pane_id" Enter 2>/dev/null
+          sleep 1
+          # Start the agent fresh
+          herdr agent start "$name" --kind claude --pane "$pane_id" --timeout 15000 2>/dev/null
         fi
       fi
       cmd=""
